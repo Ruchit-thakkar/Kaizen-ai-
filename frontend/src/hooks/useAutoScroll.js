@@ -26,7 +26,7 @@ export const useAutoScroll = (dependencies = []) => {
   // Scroll to bottom when dependencies change, if auto-scroll is enabled
   useEffect(() => {
     if (shouldAutoScroll) {
-      scrollToBottom('smooth');
+      scrollToBottom('auto');
     }
   }, dependencies);
 
@@ -41,6 +41,8 @@ export const useAutoScroll = (dependencies = []) => {
   return {
     scrollContainerRef,
     handleScroll,
-    forceScrollToBottom
+    forceScrollToBottom,
+    shouldAutoScroll,
+    scrollToBottom
   };
 };

@@ -9,7 +9,7 @@ export const useSocket = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [error, setError] = useState(null);
-  const [defaultModel, setDefaultModel] = useState('deepseekFlash');
+  const [defaultModel, setDefaultModel] = useState('gptOss120b');
 
   // Change conversation model or default model
   const changeConversationModel = useCallback(async (id, model) => {
@@ -119,12 +119,23 @@ export const useSocket = () => {
       if (streamError) {
         setError(streamError);
         setIsGenerating(false);
-        // Remove assistant placeholder in case of error
+        // Show user-friendly error message in place of empty outputs
         setMessages((prev) => {
-          if (prev.length > 0 && prev[prev.length - 1].role === 'assistant' && prev[prev.length - 1].content === '') {
-            return prev.slice(0, -1);
+          const updated = [...prev];
+          const lastMsg = updated[updated.length - 1];
+          if (lastMsg && lastMsg.role === 'assistant') {
+            updated[updated.length - 1] = {
+              ...lastMsg,
+              content: 'Unable to generate a response.\nPlease try again or switch to another model.'
+            };
+          } else {
+            updated.push({
+              id: `assistant-error-${Date.now()}`,
+              role: 'assistant',
+              content: 'Unable to generate a response.\nPlease try again or switch to another model.'
+            });
           }
-          return prev;
+          return updated;
         });
         return;
       }
@@ -161,7 +172,7 @@ export const useSocket = () => {
       setConversations((prev) => {
         // Add if not already present
         if (!prev.some((c) => c._id === conversationId)) {
-          return [{ _id: conversationId, title, model: model || 'deepseekFlash', updatedAt: new Date() }, ...prev];
+          return [{ _id: conversationId, title, model: model || 'gptOss120b', updatedAt: new Date() }, ...prev];
         }
         return prev;
       });
@@ -278,7 +289,7 @@ export const useSocket = () => {
   }, []);
 
   const activeConversation = conversations.find((c) => c._id === activeConversationId);
-  const activeModel = activeConversation ? (activeConversation.model || 'deepseekFlash') : defaultModel;
+  const activeModel = activeConversation ? (activeConversation.model || 'gptOss120b') : defaultModel;
 
   return {
     messages,

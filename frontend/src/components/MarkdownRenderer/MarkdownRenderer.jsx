@@ -17,7 +17,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
 
   if (inline) {
     return (
-      <code className="bg-zinc-800 text-zinc-200 px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
+      <code className="bg-soft-slate-black text-secondary-text px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
         {children}
       </code>
     );
@@ -26,19 +26,19 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
   const language = match ? match[1] : 'text';
 
   return (
-    <div className="relative my-4 rounded-xl border border-zinc-800/80 overflow-hidden bg-zinc-950 font-mono shadow-lg">
+    <div className="relative my-4 rounded-xl border border-border-color overflow-hidden bg-deep-jet-black font-mono shadow-lg">
       {/* Codeblock header bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-850 text-xs text-zinc-400 select-none">
-        <span className="font-mono text-zinc-500 font-semibold uppercase">{language}</span>
+      <div className="flex items-center justify-between px-4 py-2 bg-soft-slate-black border-b border-border-color text-xs text-secondary-text select-none">
+        <span className="font-mono text-muted-text font-semibold uppercase">{language}</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 hover:text-zinc-200 transition-colors py-1 px-2 rounded hover:bg-zinc-850"
+          className="flex items-center gap-1.5 hover:text-white transition-colors py-1 px-2 rounded hover:bg-elevated-surface cursor-pointer"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-emerald-400 font-medium">Copied</span>
+              <Check className="h-3.5 w-3.5 text-green-400" />
+              <span className="text-green-400 font-medium">Copied</span>
             </>
           ) : (
             <>
@@ -73,21 +73,21 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
 
 export default function MarkdownRenderer({ content }) {
   return (
-    <div className="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed space-y-2">
+    <div className="prose prose-invert max-w-none text-white text-sm leading-relaxed space-y-2 font-light">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           code: CodeBlock,
           a({ href, children }) {
             return (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline hover:text-indigo-350 transition-colors">
+              <a href={href} target="_blank" rel="noopener noreferrer" className="text-coral-glow hover:underline hover:text-hover-accent font-semibold transition-colors">
                 {children}
               </a>
             );
           },
           table({ children }) {
             return (
-              <div className="overflow-x-auto my-4 border border-zinc-850 rounded-xl shadow-md">
+              <div className="overflow-x-auto my-4 border border-border-color rounded-xl shadow-md">
                 <table className="w-full text-left border-collapse text-xs">
                   {children}
                 </table>
@@ -95,13 +95,13 @@ export default function MarkdownRenderer({ content }) {
             );
           },
           thead({ children }) {
-            return <thead className="bg-zinc-900/60 border-b border-zinc-850 text-zinc-400 uppercase font-mono tracking-wider">{children}</thead>;
+            return <thead className="bg-soft-slate-black border-b border-border-color text-secondary-text uppercase font-mono tracking-wider">{children}</thead>;
           },
           tbody({ children }) {
-            return <tbody className="divide-y divide-zinc-900 text-zinc-350">{children}</tbody>;
+            return <tbody className="divide-y divide-border-color/50 text-secondary-text">{children}</tbody>;
           },
           tr({ children }) {
-            return <tr className="hover:bg-zinc-900/20 transition-colors">{children}</tr>;
+            return <tr className="hover:bg-soft-slate-black/35 transition-colors">{children}</tr>;
           },
           th({ children }) {
             return <th className="px-4 py-3 font-semibold">{children}</th>;
@@ -111,7 +111,7 @@ export default function MarkdownRenderer({ content }) {
           },
           blockquote({ children }) {
             return (
-              <blockquote className="border-l-4 border-indigo-500/50 pl-4 py-1.5 italic text-zinc-400 my-4 bg-indigo-500/5 rounded-r">
+              <blockquote className="border-l-4 border-coral-glow/60 pl-4 py-1.5 italic text-secondary-text my-4 bg-coral-glow/5 rounded-r">
                 {children}
               </blockquote>
             );

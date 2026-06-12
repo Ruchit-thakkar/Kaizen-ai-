@@ -1,5 +1,6 @@
 import env from '../../config/env.js';
 
+
 /**
  * Normalizes a vector using L2 normalization (Euclidean norm).
  * @param {Array<number>} vec - The raw vector array
@@ -27,7 +28,75 @@ export const generateNVIDIAStream = async (messages, options = {}) => {
     throw new Error('NVIDIA_API_KEY is not defined in environment variables.');
   }
 
+  // Set default parameters
+  let temperature = 0.2;
+  let top_p = 0.7;
+  let max_tokens = 1024;
+  let frequency_penalty = 0.0;
+  let presence_penalty = 0.0;
+  let stop = undefined;
+
+  // Custom configurations per model
+  if (model.includes('llama-3.3-70b')) {
+    // Llama 3.3 70B: higher temperature for natural flow
+    temperature = 0.7;
+    top_p = 0.9;
+    max_tokens = 2048;
+  }
+
+  const requestBody = {
+    model,
+    messages,
+    stream: true,
+    temperature,
+    top_p,
+    max_tokens,
+    frequency_penalty,
+    presence_penalty
+  };
+
+  if (stop) {
+    requestBody.stop = stop;
+  }
+
   const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(requestBody),
+    signal
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => '');
+    console.error(`[Model Service Error] Provider: NVIDIA, Model: ${model}, Status Code: ${response.status}, Error Message: ${response.statusText}, Response Body: ${errorBody}`);
+    throw new Error(`Unable to generate a response.\nPlease try again or switch to another model.`);
+  }
+
+  return response;
+};
+
+
+
+/**
+ * Generate a stream of completion chunks from the Groq API.
+ * @param {Array<Object>} messages - Array of message objects [{role, content}]
+ * @param {Object} options - API Options
+ * @param {string} options.model - Model ID (e.g. 'openai/gpt-oss-120b')
+ * @param {AbortSignal} [options.signal] - Abort signal to cancel the stream
+ * @returns {Promise<Response>} HTTP Response object
+ */
+export const generateGroqStream = async (messages, options = {}) => {
+  const { model, signal } = options;
+  const apiKey = env.GROQ_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('GROQ_API_KEY is not defined in environment variables.');
+  }
+
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,16 +106,17 @@ export const generateNVIDIAStream = async (messages, options = {}) => {
       model,
       messages,
       stream: true,
-      temperature: 0.2,
-      top_p: 0.7,
-      max_tokens: 1024
+      temperature: 0.3,
+      top_p: 0.85,
+      max_tokens: 2048
     }),
     signal
   });
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => '');
-    throw new Error(`NVIDIA API HTTP Error ${response.status}: ${errorBody || response.statusText}`);
+    console.error(`[Model Service Error] Provider: Groq, Model: ${model}, Status Code: ${response.status}, Error Message: ${response.statusText}, Response Body: ${errorBody}`);
+    throw new Error(`Unable to generate a response.\nPlease try again or switch to another model.`);
   }
 
   return response;

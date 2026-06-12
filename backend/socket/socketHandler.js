@@ -114,7 +114,7 @@ export const registerSocketHandler = (io) => {
         // 4. Trigger Multi-Model stream generation
         const stream = await generateMultiModelStream(messages, {
           signal: controller.signal,
-          modelKey: conversation.model || model || 'deepseekFlash',
+          modelKey: conversation.model || model || 'gptOss120b',
           systemInstruction,
         });
 

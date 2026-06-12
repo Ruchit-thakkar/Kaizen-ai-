@@ -10,6 +10,8 @@ export async function* parseSSEStream(response, signal) {
   if (!body) return;
 
   const decoder = new TextDecoder('utf-8');
+  let hasReasoning = false;
+  let transitionDone = false;
 
   // Case 1: Web-standard ReadableStream (using getReader)
   if (typeof body.getReader === 'function') {
@@ -39,9 +41,20 @@ export async function* parseSSEStream(response, signal) {
             try {
               const dataStr = trimmed.slice(6);
               const json = JSON.parse(dataStr);
-              const content = json.choices?.[0]?.delta?.content || '';
-              if (content) {
-                yield { text: content };
+              const delta = json.choices?.[0]?.delta;
+              if (delta) {
+                const content = delta.content || '';
+                const reasoning = delta.reasoning_content || delta.reasoning || '';
+                if (reasoning) {
+                  hasReasoning = true;
+                  yield { text: reasoning };
+                } else if (content) {
+                  if (hasReasoning && !transitionDone) {
+                    transitionDone = true;
+                    yield { text: '\n\n' };
+                  }
+                  yield { text: content };
+                }
               }
             } catch (err) {
               // Ignore partial chunk JSON parse errors
@@ -75,9 +88,20 @@ export async function* parseSSEStream(response, signal) {
           try {
             const dataStr = trimmed.slice(6);
             const json = JSON.parse(dataStr);
-            const content = json.choices?.[0]?.delta?.content || '';
-            if (content) {
-              yield { text: content };
+            const delta = json.choices?.[0]?.delta;
+            if (delta) {
+              const content = delta.content || '';
+              const reasoning = delta.reasoning_content || delta.reasoning || '';
+              if (reasoning) {
+                hasReasoning = true;
+                yield { text: reasoning };
+              } else if (content) {
+                if (hasReasoning && !transitionDone) {
+                  transitionDone = true;
+                  yield { text: '\n\n' };
+                }
+                yield { text: content };
+              }
             }
           } catch (err) {
             // Ignore partial chunk JSON parse errors

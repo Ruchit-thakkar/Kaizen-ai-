@@ -8,7 +8,9 @@ const env = {
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   PINECONE_API_KEY: process.env.PINECONE_API_KEY || '',
-  NVIDIA_API_KEY: process.env.NVIDIA_API_KEY || ''
+  NVIDIA_API_KEY: process.env.NVIDIA_API_KEY || '',
+  GROQ_API_KEY: process.env.GROQ_API_KEY || '',
+  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || ''
 };
 
 // Safety validations

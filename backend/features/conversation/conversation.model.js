@@ -13,7 +13,7 @@ const conversationSchema = new mongoose.Schema({
   },
   model: {
     type: String,
-    default: 'deepseekFlash'
+    default: 'gptOss120b'
   },
   summary: {
     type: String,

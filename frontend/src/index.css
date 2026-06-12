@@ -1,19 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;550;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;550;600;700&family=Geist:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-outfit: 'Outfit', sans-serif;
+  --font-geist: 'Geist', sans-serif;
   
-  --color-zinc-850: #1b1d22;
-  --color-zinc-950: #0b0d12;
+  --color-main-bg: #0B0D12;
+  --color-sidebar-bg: #11151D;
+  --color-chat-bg: #151A23;
+  --color-input-bg: #1C2230;
+  --color-elevated-card: #242B3A;
+  --color-border-color: #30394A;
+  
+  --color-primary-text: #FFFFFF;
+  --color-secondary-text: #C6CBD5;
+  --color-muted-text: #8D96A7;
+}
+
+:root {
+  --main-bg: #0B0D12;
+  --sidebar-bg: #11151D;
+  --chat-bg: #151A23;
+  --input-bg: #1C2230;
+  --elevated-card: #242B3A;
+  --border-color: #30394A;
+  
+  --primary-text: #FFFFFF;
+  --secondary-text: #C6CBD5;
+  --muted-text: #8D96A7;
 }
 
 /* Reset and general styles */
 @layer base {
   body {
-    background-color: #0e1015;
-    color: #f4f4f5;
+    background-color: var(--main-bg);
+    color: var(--primary-text);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -30,6 +52,7 @@
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    background-color: var(--main-bg);
   }
 }
 
@@ -54,6 +77,26 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
 .animate-slide-in {
   animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -62,7 +105,22 @@
   animation: fadeIn 0.25s ease-out forwards;
 }
 
+.animate-shimmer {
+  background: linear-gradient(90deg, #1c2230 25%, #242b3a 50%, #1c2230 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite linear;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
 /* Custom minimalist scrollbars */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -73,10 +131,15 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(63, 63, 70, 0.45);
+  background: var(--border-color);
   border-radius: 9999px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(82, 82, 91, 0.65);
+  background: var(--muted-text);
+}
+
+/* Custom styling for inputs to eliminate browser defaults */
+input, textarea {
+  font-family: inherit;
 }

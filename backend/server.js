@@ -5,6 +5,7 @@ import { connectDB } from './config/db.js';
 import { registerSocketHandler } from './socket/socketHandler.js';
 import env from './config/env.js';
 
+// Initialize the HTTP server instance for Socket.IO and Express
 const server = http.createServer(app);
 
 // Attach Socket.IO with credentials CORS rules

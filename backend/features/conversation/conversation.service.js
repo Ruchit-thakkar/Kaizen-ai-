@@ -32,7 +32,7 @@ export const renameConversation = async (conversationId, title) => {
   return await Conversation.findByIdAndUpdate(
     conversationId,
     { title },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   );
 };
 
@@ -93,14 +93,14 @@ export const generateTitle = async (firstMessageText) => {
 /**
  * Update the active model of a conversation.
  * @param {string} conversationId - Conversation identifier
- * @param {string} model - Selected model key (e.g. 'deepseekPro')
+ * @param {string} model - Selected model key (e.g. 'deepseekFlash')
  * @returns {Promise<Object|null>} Updated conversation document or null
  */
 export const updateConversationModel = async (conversationId, model) => {
   return await Conversation.findByIdAndUpdate(
     conversationId,
     { model },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   );
 };
 

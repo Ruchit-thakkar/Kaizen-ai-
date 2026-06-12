@@ -1,0 +1,21 @@
+{
+  "name": "Kaizen AI",
+  "short_name": "Kaizen AI",
+  "description": "Kaizen AI — Your intelligent AI assistant for conversations, coding, reasoning, and productivity.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0D12",
+  "theme_color": "#0B0D12",
+  "icons": [
+    {
+      "src": "https://ik.imagekit.io/devnext/kaizen%20ai%20logo",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ik.imagekit.io/devnext/kaizen%20ai%20logo",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

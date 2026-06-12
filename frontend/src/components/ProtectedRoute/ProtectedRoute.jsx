@@ -12,15 +12,19 @@ export default function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#0b0d12] text-zinc-200">
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-main-bg text-white animate-fade-in">
         <div className="relative flex items-center justify-center">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-xl shadow-indigo-500/25 animate-pulse">
-            <Sparkles className="h-6 w-6 text-white animate-spin" style={{ animationDuration: '4s' }} />
+          <div className="h-20 w-20 flex items-center justify-center animate-pulse">
+            <img 
+              src="https://ik.imagekit.io/devnext/kaizen%20ai%20logo" 
+              alt="Kaizen AI Logo" 
+              className="h-16 w-16 object-contain" 
+            />
           </div>
-          {/* Pulsing ring animation */}
-          <div className="absolute top-0 left-0 h-14 w-14 rounded-2xl border-2 border-indigo-500/35 animate-ping" />
+          {/* Subtle pulse ring */}
+          <div className="absolute top-0 left-0 h-20 w-20 rounded-full border border-white/10 animate-ping" style={{ animationDuration: '2.5s' }} />
         </div>
-        <span className="mt-5 text-[10px] font-semibold tracking-widest font-mono uppercase text-zinc-500 animate-pulse">
+        <span className="mt-5 text-[10px] font-semibold tracking-widest font-mono uppercase text-muted-text animate-pulse">
           Resuming Session
         </span>
       </div>

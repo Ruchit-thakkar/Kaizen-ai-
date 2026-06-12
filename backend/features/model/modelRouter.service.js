@@ -7,8 +7,8 @@ import { modelConfig, NVIDIA_MODEL_IDS } from './modelConfig.js';
  * @returns {string} Fully qualified NVIDIA model ID (e.g., 'deepseek-ai/deepseek-v4-flash')
  */
 export const resolveModel = (modelKey) => {
-  // Try mapping modelKey (like 'deepseekFlash') to its modelString (like 'deepseek-v4-flash')
-  const modelString = modelConfig[modelKey] || modelConfig.deepseekFlash;
+  // Try mapping modelKey (like 'llama70b') to its modelString (like 'llama-3.3-70b-instruct')
+  const modelString = modelConfig[modelKey] || modelConfig.llama70b;
 
   // Resolve modelString to fully qualified NVIDIA model ID (with vendor prefix)
   const fullModelId = NVIDIA_MODEL_IDS[modelString];
@@ -17,7 +17,7 @@ export const resolveModel = (modelKey) => {
     return fullModelId;
   }
 
-  // Fallback to deepseek-v4-flash with correct vendor prefix if mapping not found
-  console.warn(`[Model Router] Unresolved model: "${modelKey}". Falling back to default deepseek-v4-flash.`);
-  return 'deepseek-ai/deepseek-v4-flash';
+  // Fallback to llama-3.3-70b-instruct with correct vendor prefix if mapping not found
+  console.warn(`[Model Router] Unresolved model: "${modelKey}". Falling back to default llama-3.3-70b-instruct.`);
+  return 'meta/llama-3.3-70b-instruct';
 };
