@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;550;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+  
+  --color-zinc-850: #1b1d22;
+  --color-zinc-950: #0b0d12;
+}
+
+/* Reset and general styles */
+@layer base {
+  body {
+    background-color: #0e1015;
+    color: #f4f4f5;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  #root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Premium micro-animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Custom minimalist scrollbars */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.45);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(82, 82, 91, 0.65);
+}
