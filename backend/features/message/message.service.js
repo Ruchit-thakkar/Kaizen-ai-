@@ -8,8 +8,12 @@ import Conversation from '../conversation/conversation.model.js';
  * @param {string} content - Message text content
  * @returns {Promise<Object>} Saved message document
  */
-export const saveMessage = async (conversationId, role, content) => {
-  const message = await Message.create({ conversationId, role, content });
+export const saveMessage = async (conversationId, role, content, attachment = null) => {
+  const messageData = { conversationId, role, content };
+  if (attachment) {
+    messageData.attachment = attachment;
+  }
+  const message = await Message.create(messageData);
   
   // Touch conversation to update updatedAt timestamp
   await Conversation.findByIdAndUpdate(conversationId, { updatedAt: new Date() });

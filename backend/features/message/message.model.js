@@ -14,7 +14,17 @@ const messageSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true
+    default: ''
+  },
+  attachment: {
+    url: String,
+    name: String,
+    mimeType: String,
+    size: Number,
+    fileType: {
+      type: String,
+      enum: ['image', 'document', 'code', 'audio', 'video']
+    }
   },
   timestamp: {
     type: Date,

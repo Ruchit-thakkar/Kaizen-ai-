@@ -10,7 +10,11 @@ const env = {
   PINECONE_API_KEY: process.env.PINECONE_API_KEY || '',
   NVIDIA_API_KEY: process.env.NVIDIA_API_KEY || '',
   GROQ_API_KEY: process.env.GROQ_API_KEY || '',
-  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || ''
+  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || '',
+  IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY || '',
+  IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY || '',
+  IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT || '',
+  BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000'
 };
 
 // Safety validations

@@ -52,7 +52,8 @@ export const useSocket = () => {
         const history = res.data.data.map((msg) => ({
           id: msg._id,
           role: msg.role,
-          content: msg.content
+          content: msg.content,
+          attachment: msg.attachment
         }));
         setMessages(history);
       }
@@ -201,8 +202,8 @@ export const useSocket = () => {
     };
   }, [fetchConversations]);
 
-  const sendMessage = useCallback((text) => {
-    if (!text.trim() || isGenerating) return;
+  const sendMessage = useCallback((text, attachment = null) => {
+    if ((!text.trim() && !attachment) || isGenerating) return;
 
     setError(null);
     setIsGenerating(true);
@@ -213,7 +214,8 @@ export const useSocket = () => {
     const userMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: text
+      content: text,
+      attachment: attachment
     };
 
     const assistantPlaceholder = {
@@ -227,7 +229,8 @@ export const useSocket = () => {
     socket.emit('send-message', {
       conversationId: activeConversationId,
       messageText: text,
-      model: currentModel
+      model: currentModel,
+      attachment: attachment
     });
   }, [activeConversationId, conversations, defaultModel, isGenerating]);
 
@@ -277,7 +280,8 @@ export const useSocket = () => {
     socket.emit('send-message', {
       conversationId: activeConversationId,
       messageText: lastUserMessage.content,
-      model: currentModel
+      model: currentModel,
+      attachment: lastUserMessage.attachment
     });
   }, [messages, activeConversationId, conversations, defaultModel, isGenerating]);
 

@@ -19,6 +19,51 @@ const getAIClient = () => {
   return aiClient;
 };
 
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+
+/**
+ * Resolves a file URL or local path to base64 inlineData for the Gemini API
+ * @param {Object} attachment 
+ * @returns {Promise<Object|null>} Gemini inlineData part
+ */
+const resolveFileToGeminiPart = async (attachment) => {
+  const { url, mimeType, localPath } = attachment;
+  if (!url && !localPath) return null;
+
+  try {
+    let dataBuffer;
+    if (localPath && fs.existsSync(localPath)) {
+      dataBuffer = fs.readFileSync(localPath);
+    } else if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+      const response = await axios.get(url, { responseType: 'arraybuffer' });
+      dataBuffer = Buffer.from(response.data);
+    } else if (url) {
+      // Relative path handling
+      const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+      const resolvedPath = path.join(process.cwd(), cleanUrl);
+      if (fs.existsSync(resolvedPath)) {
+        dataBuffer = fs.readFileSync(resolvedPath);
+      } else {
+        throw new Error(`File not found at resolved local path: ${resolvedPath}`);
+      }
+    } else {
+      throw new Error('No valid file source.');
+    }
+
+    return {
+      inlineData: {
+        data: dataBuffer.toString('base64'),
+        mimeType
+      }
+    };
+  } catch (err) {
+    console.error('[AI Service Duplicate] resolveFileToGeminiPart error:', err.message);
+    return null;
+  }
+};
+
 /**
  * Generate a streaming response from Gemini
  * @param {Array} messages - Chat history in the format [{ role: 'user'|'model', content: string }]
@@ -27,21 +72,39 @@ const getAIClient = () => {
  */
 export const generateStream = async (messages, options = {}) => {
   const client = getAIClient();
-  const { signal, model = 'gemini-2.5-flash' } = options;
+  const { signal, model = 'gemini-2.5-flash', systemInstruction } = options;
 
-  // Format messages to match Gemini requirements:
-  // [{ role: 'user' | 'model', parts: [{ text: string }] }]
-  const contents = messages.map(msg => ({
-    role: msg.role === 'user' ? 'user' : 'model',
-    parts: [{ text: msg.content }]
-  }));
+  // Map messages to include file parts when attachments are present
+  const contents = [];
+  for (const msg of messages) {
+    const parts = [];
+    if (msg.content) {
+      parts.push({ text: msg.content });
+    }
+    if (msg.attachment) {
+      const part = await resolveFileToGeminiPart(msg.attachment);
+      if (part) {
+        parts.push(part);
+      }
+    }
+    // Gemini requires at least one part per content object
+    if (parts.length === 0) {
+      parts.push({ text: '' });
+    }
+    contents.push({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts
+    });
+  }
 
   // Call the generateContentStream API.
-  // We pass the signal inside the second parameter (requestOptions)
   const stream = await client.models.generateContentStream(
     {
       model,
       contents,
+      config: {
+        systemInstruction,
+      }
     },
     {
       signal,

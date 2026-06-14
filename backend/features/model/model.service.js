@@ -14,7 +14,69 @@ import { generateStream } from '../ai/ai.service.js';
  * @returns {Promise<AsyncGenerator<{text: string}>>} Async generator yielding response delta chunks
  */
 export const generateMultiModelStream = async (messages, options = {}) => {
-  const { modelKey, systemInstruction, signal } = options;
+  let { modelKey, systemInstruction, signal } = options;
+
+  // 1. Check if there is an attachment on the latest user message
+  const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+  const attachment = lastUserMessage?.attachment;
+  
+  let processedSystemInstruction = systemInstruction || '';
+
+  if (attachment) {
+    const { fileType } = attachment;
+    console.log(`[Model Service] Processing attachment of type "${fileType}"`);
+
+    // Override text-only models for binary multimodal files (image, audio, video, pdf)
+    const isMultimodalFile = ['image', 'audio', 'video', 'document'].includes(fileType);
+    const isTextOnlyModel = modelKey !== 'gemini25Flash';
+    
+    if (isMultimodalFile && isTextOnlyModel) {
+      console.log(`[Model Router] Overriding text-only engine "${modelKey}" to "gemini25Flash" for multimodal file.`);
+      modelKey = 'gemini25Flash';
+    }
+
+    // Call corresponding service instructions
+    if (fileType === 'image') {
+      const { getInstructions } = await import('../../services/imageService.js');
+      processedSystemInstruction = `${getInstructions()}\n\n${processedSystemInstruction}`;
+    } else if (fileType === 'document') {
+      const { getInstructions, parseDocx } = await import('../../services/pdfService.js');
+      processedSystemInstruction = `${getInstructions()}\n\n${processedSystemInstruction}`;
+      
+      // If it's a docx file, we extract its text and inject it into the prompt
+      if (attachment.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || attachment.name.endsWith('.docx')) {
+        try {
+          if (attachment.localPath) {
+            const extractedText = await parseDocx(attachment.localPath);
+            lastUserMessage.content = `[Attached Word Document Content]:\n${extractedText}\n\n${lastUserMessage.content}`;
+            // Remove attachment since it's converted to text
+            delete lastUserMessage.attachment;
+          }
+        } catch (err) {
+          console.error('[Model Service] Error parsing docx:', err.message);
+        }
+      }
+    } else if (fileType === 'code') {
+      const { getInstructions, readCodeFile } = await import('../../services/codeService.js');
+      processedSystemInstruction = `${getInstructions()}\n\n${processedSystemInstruction}`;
+      
+      // We read the code file and inject it into the message prompt
+      try {
+        const codeContent = await readCodeFile(attachment);
+        lastUserMessage.content = `[Code File: ${attachment.name}]\n\`\`\`\n${codeContent}\n\`\`\`\n\n${lastUserMessage.content}`;
+        // Remove attachment object so text-only models don't crash
+        delete lastUserMessage.attachment;
+      } catch (err) {
+        console.error('[Model Service] Error parsing code file:', err.message);
+      }
+    } else if (fileType === 'audio') {
+      const { getInstructions } = await import('../../services/audioService.js');
+      processedSystemInstruction = `${getInstructions()}\n\n${processedSystemInstruction}`;
+    } else if (fileType === 'video') {
+      const { getInstructions } = await import('../../services/videoService.js');
+      processedSystemInstruction = `${getInstructions()}\n\n${processedSystemInstruction}`;
+    }
+  }
 
   // Handle Google Gemini 2.5 Flash direct integration
   if (modelKey === 'gemini25Flash') {
@@ -22,7 +84,7 @@ export const generateMultiModelStream = async (messages, options = {}) => {
     const stream = await generateStream(messages, {
       signal,
       model: 'gemini-2.5-flash',
-      systemInstruction
+      systemInstruction: processedSystemInstruction
     });
 
     return (async function* () {

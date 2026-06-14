@@ -42,11 +42,11 @@ export const registerSocketHandler = (io) => {
     console.log(`Secure client connected: ${socket.id} (User: ${socket.user.name})`);
 
     socket.on('send-message', async (data) => {
-      let { conversationId, messageText, model } = data;
+      let { conversationId, messageText, model, attachment } = data;
       const userId = socket.user.id;
 
-      if (!messageText || !messageText.trim()) {
-        socket.emit('receive-message', { error: 'Message content is required.' });
+      if ((!messageText || !messageText.trim()) && !attachment) {
+        socket.emit('receive-message', { error: 'Message content or attachment is required.' });
         return;
       }
 
@@ -94,7 +94,8 @@ export const registerSocketHandler = (io) => {
           });
 
           // Generate a descriptive title asynchronously
-          generateTitle(messageText).then(async (title) => {
+          const titleInput = messageText || (attachment ? `Analyzed ${attachment.fileType}` : 'New chat');
+          generateTitle(titleInput).then(async (title) => {
             await renameConversation(conversationId, title);
             socket.emit('conversation-updated', {
               conversationId,
@@ -106,7 +107,7 @@ export const registerSocketHandler = (io) => {
         }
 
         // 2. Save incoming user message
-        await saveMessage(conversationId, 'user', messageText);
+        await saveMessage(conversationId, 'user', messageText || '', attachment);
 
         // 3. Retrieve sliding window history and relevant long-term memory facts
         const { messages, systemInstruction } = await buildContext(userId, conversationId, messageText);

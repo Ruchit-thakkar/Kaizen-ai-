@@ -60,7 +60,8 @@ Use this information where appropriate to personalize your answers. Do not expli
   // Return list format compatible with model services
   const formattedMessages = recentMessages.map(msg => ({
     role: msg.role,
-    content: msg.content
+    content: msg.content,
+    attachment: msg.attachment
   }));
 
   return {

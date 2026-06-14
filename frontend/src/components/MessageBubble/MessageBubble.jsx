@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Copy, Check, RotateCw, Sparkles, User, Edit3 } from 'lucide-react';
 import MarkdownRenderer from '../MarkdownRenderer/MarkdownRenderer';
 import { useAuth } from '../../context/AuthContext';
+import FilePreview from '../FilePreview/FilePreview';
 
 export default function MessageBubble({ message, onRegenerate, onSendMessage, isLast, isGenerating }) {
   const { role, content } = message;
@@ -91,9 +92,19 @@ export default function MessageBubble({ message, onRegenerate, onSendMessage, is
             /* Normal content flow (transparent backgrounds) */
             <div className="text-secondary-text text-base leading-relaxed font-light font-outfit mt-1 select-text">
               {isUser ? (
-                <p className="whitespace-pre-wrap text-white font-light">{content}</p>
+                <div className="flex flex-col gap-2">
+                  {content && <p className="whitespace-pre-wrap text-white font-light">{content}</p>}
+                  {message.attachment && (
+                    <FilePreview file={message.attachment} readOnly={true} />
+                  )}
+                </div>
               ) : content ? (
-                <MarkdownRenderer content={content} />
+                <div className="flex flex-col gap-2">
+                  <MarkdownRenderer content={content} />
+                  {message.attachment && (
+                    <FilePreview file={message.attachment} readOnly={true} />
+                  )}
+                </div>
               ) : (
                 /* Initial thinking pulse */
                 <div className="flex items-center gap-1.5 py-2.5 select-none">

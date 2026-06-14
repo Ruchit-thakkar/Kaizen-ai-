@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { corsOptions } from './config/cors.js';
 import { errorHandler } from './middleware/error.middleware.js';
 
@@ -12,6 +14,10 @@ import conversationRoutes from './features/conversation/conversation.routes.js';
 import messageRoutes from './features/message/message.routes.js';
 import memoryRoutes from './features/memory/memory.routes.js';
 import modelRoutes from './features/model/model.routes.js';
+import uploadRoutes from './features/upload/upload.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -19,6 +25,9 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve static local uploads
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Mount feature-based API routes
 app.use('/api/auth', authRoutes);
@@ -28,6 +37,7 @@ app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/models', modelRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // API Health Check
 app.get('/health', (req, res) => {
