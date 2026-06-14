@@ -136,6 +136,7 @@ export default function Home() {
             activeModel={activeModel}
             changeConversationModel={changeConversationModel}
             activeConversationId={activeConversationId}
+            messages={messages}
           />
           <div className="text-center text-[10px] text-muted-text mt-2.5 tracking-wide font-mono select-none">
             Kaizen AI v1.0.0. Grayscale Minimalist Layout.

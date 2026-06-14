@@ -65,7 +65,7 @@ export const generateTitle = async (firstMessageText) => {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-ai/deepseek-v4-flash',
+        model: 'meta/llama-3.3-70b-instruct',
         messages: [
           {
             role: 'user',

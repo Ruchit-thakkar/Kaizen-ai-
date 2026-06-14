@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Send, Square, ChevronDown, Check, Paperclip } from 'lucide-react';
 import FilePreview from '../FilePreview/FilePreview';
 import api from '../../services/api';
+import VoiceButton from '../VoiceButton/VoiceButton';
 
 const AVAILABLE_MODELS = [
   {
@@ -36,7 +37,8 @@ export default function MessageInput({
   onStopGeneration,
   activeModel = "gptOss120b",
   changeConversationModel,
-  activeConversationId
+  activeConversationId,
+  messages = []
 }) {
   const [input, setInput] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -293,8 +295,15 @@ export default function MessageInput({
             </button>
           </div>
 
-          {/* Right Controls: Char Counter and Submit/Stop buttons */}
+          {/* Right Controls: Voice recorder, Char Counter and Submit/Stop buttons */}
           <div className="flex items-center gap-3">
+            <VoiceButton
+              sendMessage={onSendMessage}
+              messages={messages}
+              isGenerating={isGenerating}
+              activeConversationId={activeConversationId}
+            />
+
             <span className="text-[10px] text-muted-text font-mono">
               {input.length} / {MAX_CHARS}
             </span>

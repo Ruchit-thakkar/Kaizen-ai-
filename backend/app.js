@@ -15,6 +15,7 @@ import messageRoutes from './features/message/message.routes.js';
 import memoryRoutes from './features/memory/memory.routes.js';
 import modelRoutes from './features/model/model.routes.js';
 import uploadRoutes from './features/upload/upload.routes.js';
+import voiceRoutes from './features/voice/voice.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/models', modelRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/voice', voiceRoutes);
 
 // API Health Check
 app.get('/health', (req, res) => {
