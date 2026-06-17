@@ -11,7 +11,7 @@ const server = http.createServer(app);
 // Attach Socket.IO with credentials CORS rules
 const io = new Server(server, {
   cors: {
-    origin: env.CLIENT_URL,
+    origin: [env.CLIENT_URL, env.BACKEND_URL, 'https://kaizen-ai-yj4p.onrender.com'],
     methods: ['GET', 'POST'],
     credentials: true
   }
