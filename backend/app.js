@@ -46,6 +46,14 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Kaizen AI Secure Backend is active.' });
 });
 
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Catch-all route to serve index.html for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Register global error middleware (must be registered last)
 app.use(errorHandler);
 
